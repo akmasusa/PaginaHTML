@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Jogo da Velha Responsivo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            font-size: 2em;
+            cursor: pointer;
+        }
+        @media (max-width: 600px) {
+            .cell {
+                width: 80px;
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Jogo da Velha</h1>
+        <p>Jogador 1: <input type="text" id="player1" placeholder="Nome do Jogador 1"></p>
+        <p>Jogador 2: <input type="text" id="player2" placeholder="Nome do Jogador 2"></p>
+        <button onclick="startGame()">Iniciar Jogo</button>
+        <div class="board">
+            <div class="cell" onclick="makeMove(this, 0)"></div>
+            <div class="cell" onclick="makeMove(this, 1)"></div>
+            <div class="cell" onclick="makeMove(this, 2)"></div>
+            <div class="cell" onclick="makeMove(this, 3)"></div>
+            <div class="cell" onclick="makeMove(this, 4)"></div>
+            <div class="cell" onclick="makeMove(this, 5)"></div>
+            <div class="cell" onclick="makeMove(this, 6)"></div>
+            <div class="cell" onclick="makeMove(this, 7)"></div>
+            <div class="cell" onclick="makeMove(this, 8)"></div>
+        </div>
+        <p id="result"></p>
+        <p>Vitórias de <span id="namePlayer1"></span>: <span id="winsPlayer1">0</span></p>
+        <p>Vitórias de <span id="namePlayer2"></span>: <span id="winsPlayer2">0</span></p>
+    </div>
+
+    <script>
+        let currentPlayer = 'X';
+        let board = ['', '', '', '', '', '', '', '', ''];
+        const winPatterns = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+        let player1Wins = 0;
+        let player2Wins = 0;
+        let player1Name = '';
+        let player2Name = '';
+
+        function startGame() {
+            player1Name = document.getElementById('player1').value || 'Jogador 1';
+            player2Name = document.getElementById('player2').value || 'Jogador 2';
+            document.getElementById('namePlayer1').textContent = player1Name;
+            document.getElementById('namePlayer2').textContent = player2Name;
+            resetGame();
+        }
+
+        function makeMove(cell, index) {
+            if (cell.textContent === '' && !checkWin()) {
+                cell.textContent = currentPlayer;
+                board[index] = currentPlayer;
+                if (checkWin()) {
+                    document.getElementById('result').textContent = `Jogador ${currentPlayer === 'X' ? player1Name : player2Name} venceu!`;
+                    if (currentPlayer === 'X') {
+                        player1Wins++;
+                        document.getElementById('winsPlayer1').textContent = player1Wins;
+                    } else {
+                        player2Wins++;
+                        document.getElementById('winsPlayer2').textContent = player2Wins;
+                    }
+                    setTimeout(resetGame, 2000); // Reiniciar o jogo após 2 segundos
+                } else if (board.every(cell => cell !== '')) {
+                    document.getElementById('result').textContent = 'Empate!';
+                    setTimeout(resetGame, 2000); // Reiniciar o jogo após 2 segundos
+                } else {
+                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                }
+            }
+        }
+
+        function checkWin() {
+            return winPatterns.some(pattern => 
+                pattern.every(index => board[index] === currentPlayer)
+            );
+        }
+
+        function resetGame() {
+            board.fill('');
+            document.querySelectorAll('.cell').forEach(cell => cell.textContent = '');
+            document.getElementById('result').textContent = '';
+            currentPlayer = 'X';
+        }
+    </script>
+</body>
+</html>
